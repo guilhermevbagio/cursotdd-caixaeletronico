@@ -1,6 +1,6 @@
 package com.caixaeletronico;
 
 public interface ServicoRemoto {
-    public boolean recuperarConta();
-    public boolean persistirConta();
+    public ContaCorrente recuperarConta(String numero);
+    public boolean persistirConta(ContaCorrente conta);
 }
