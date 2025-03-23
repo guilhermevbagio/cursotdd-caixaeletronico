@@ -5,7 +5,8 @@ public class CaixaEletronico {
     private ServicoRemoto servicoRemoto;
     private Hardware hardware;
 
-    public String logar(String numero) {
+    public String logar() {
+        String numero = hardware.pegarNumeroDaContaCartao();
         try {
             contaLogada = servicoRemoto.recuperarConta(numero);
         } catch (Exception e) {
@@ -18,6 +19,8 @@ public class CaixaEletronico {
     public String sacar(double valor) {
         try {
             contaLogada.sacarValor(valor);
+            servicoRemoto.persistirConta(contaLogada);
+            hardware.entregarDinheiro();
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -26,7 +29,14 @@ public class CaixaEletronico {
     }
 
     public String depositar(double valor) {
-        contaLogada.depositarValor(valor);
+
+        try {
+            contaLogada.depositarValor(valor);
+            hardware.lerEnvelope();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+
         if(servicoRemoto.persistirConta(contaLogada))
             return "Deposito recebido com sucesso";
         else
@@ -35,7 +45,8 @@ public class CaixaEletronico {
 
 
     public String saldo() {
-        return "O saldo é R$" + contaLogada.getSaldo();
+        double saldo =  contaLogada.getSaldo();
+        return "O saldo é R$" + saldo;
     }
 
     public void ConectarServicoRemoto(ServicoRemoto servicoRemoto) {
